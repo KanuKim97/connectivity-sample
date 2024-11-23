@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
 
     private fun startAdvertising() {
         mConnectionsClient.startAdvertising(
-            "GEONWOO_KIM",
+            "YOUR_ENDPOIT_NAME",
             Constant.SERVICE_ID,
             mConnectionLifecycleCallback,
             ConnectionOptions.advertisingOptions
@@ -137,7 +137,7 @@ class MainActivity : ComponentActivity() {
 
     private fun startDiscovering() {
         mConnectionsClient.startDiscovery(
-            "GEONWOO_KIM",
+            "YOUR_ENDPOIT_NAME",
             object : EndpointDiscoveryCallback() {
                 override fun onEndpointFound(
                     endpoint: String,
