@@ -48,6 +48,7 @@ fun NearByScreenRoute(
             arrayOf(
                 Constant.BLUETOOTH_PERMISSION,
                 Constant.BLUETOOTH_SCAN_PERMISSION,
+                Constant.BLUETOOTH_CONNECT_PERMISSION,
                 Constant.BLUETOOTH_ADVERTISE_PERMISSION,
                 Constant.NEARBY_WIFI_DEVICES_PERMISSION,
                 Constant.ACCESS_FINE_LOCATION_PERMISSION,

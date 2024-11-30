@@ -1,7 +1,6 @@
 package com.kanukim97.nearbyshare_basic
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,6 +26,7 @@ import com.kanukim97.nearbyshare_basic.utils.ConnectionOptions
 import com.kanukim97.nearbyshare_basic.utils.LogUtils.logD
 import com.kanukim97.nearbyshare_basic.utils.LogUtils.logE
 import com.kanukim97.nearbyshare_basic.utils.LogUtils.logW
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private val mEstablishConnection = HashMap<String, Endpoint>()
@@ -37,9 +37,16 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
 
+    private val myLocalEndPointName by lazy { getMyLocalName() }
+
     private val mConnectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endPointId: String, connectionInfo: ConnectionInfo) {
-            mPendingConnection[endPointId] = Endpoint(endPointId, connectionInfo.endpointName)
+            val connectionEndpoint = Endpoint(endPointId, connectionInfo.endpointName)
+
+            logD("onConnectionInit() - $endPointId, ${connectionInfo.endpointName}")
+
+            mPendingConnection[endPointId] = connectionEndpoint
+            acceptConnection(connectionEndpoint)
         }
 
         override fun onConnectionResult(endPointId: String, connectionResolution: ConnectionResolution) {
@@ -48,6 +55,8 @@ class MainActivity : ComponentActivity() {
                 mPendingConnection.remove(endPointId)
                 return
             }
+
+            logD("onConnectionResult() - $endPointId, ${connectionResolution.status}")
 
             mEstablishConnection[endPointId] = mPendingConnection.remove(endPointId) as Endpoint
         }
@@ -82,7 +91,9 @@ class MainActivity : ComponentActivity() {
         override fun onPayloadTransferUpdate(
             endPointId: String,
             transferUpdate: PayloadTransferUpdate
-        ) { mainViewModel.updateTransferState(transferUpdate) }
+        ) {
+            mainViewModel.updateTransferState(transferUpdate)
+        }
     }
 
 
@@ -115,12 +126,12 @@ class MainActivity : ComponentActivity() {
 
     private fun startAdvertising() {
         mConnectionsClient.startAdvertising(
-            "YOUR_ENDPOIT_NAME",
+            myLocalEndPointName,
             Constant.SERVICE_ID,
             mConnectionLifecycleCallback,
             ConnectionOptions.advertisingOptions
         ).addOnSuccessListener {
-            logD("Advertising Success")
+            logD("Advertising Success - Now Advertising EndPoint Name: $myLocalEndPointName")
 
             mainViewModel.updateAdvertisingShareUiState()
         }.addOnFailureListener {
@@ -137,27 +148,25 @@ class MainActivity : ComponentActivity() {
 
     private fun startDiscovering() {
         mConnectionsClient.startDiscovery(
-            "YOUR_ENDPOIT_NAME",
+            Constant.SERVICE_ID,
             object : EndpointDiscoveryCallback() {
                 override fun onEndpointFound(
-                    endpoint: String,
+                    endpointId: String,
                     discoveredEndpointInfo: DiscoveredEndpointInfo
                 ) {
+                    logD("onEndpoint Found: $endpointId: ${discoveredEndpointInfo.serviceId}, ${discoveredEndpointInfo.endpointName}")
 
+                    requestConnection(endpointId)
                 }
 
-                override fun onEndpointLost(endpointName: String) {
-
+                override fun onEndpointLost(endpointId: String) {
+                    logD("onEndpointLost : $endpointId")
                 }
             },
             ConnectionOptions.discoveryOptions
         ).addOnSuccessListener {
-            logD("Discovering Success")
-
             mainViewModel.updateDiscoveringShareUiState()
         }.addOnFailureListener {
-            logW("Discovering Failed", it)
-
             mainViewModel.updateFailedShareUiState(it)
         }
     }
@@ -175,13 +184,25 @@ class MainActivity : ComponentActivity() {
         mPendingConnection.clear()
     }
 
+    private fun requestConnection(endpointId: String) {
+        mConnectionsClient.requestConnection(
+            myLocalEndPointName,
+            endpointId,
+            mConnectionLifecycleCallback
+        ).addOnSuccessListener {
+            logD("SUCCESS")
+        }.addOnFailureListener {
+            logE("Failed Request Connection", it)
+        }
+    }
+
+
     private fun acceptConnection(endpoint: Endpoint) {
         mConnectionsClient
             .acceptConnection(endpoint.id, mPayloadCallback)
             .addOnFailureListener { exception ->
                 exception.printStackTrace()
-
-                logE("acceptConnection: Failed", exception)
+                logE("acceptConnection() - Failed", exception)
             }
     }
 
@@ -194,5 +215,7 @@ class MainActivity : ComponentActivity() {
                 logE("rejectConnection: Failed", exception)
             }
     }
+
+    private fun getMyLocalName(): String = Random.nextInt(10000).toString()
 }
 

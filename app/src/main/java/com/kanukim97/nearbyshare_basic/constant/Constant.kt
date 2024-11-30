@@ -13,8 +13,9 @@ object Constant {
 
     const val BLUETOOTH_PERMISSION = Manifest.permission.BLUETOOTH
     const val BLUETOOTH_SCAN_PERMISSION = Manifest.permission.BLUETOOTH_SCAN
-    const val BLUETOOTH_ADVERTISE_PERMISSION = Manifest.permission.BLUETOOTH_ADVERTISE
+    const val BLUETOOTH_CONNECT_PERMISSION = Manifest.permission.BLUETOOTH_CONNECT
     const val NEARBY_WIFI_DEVICES_PERMISSION = Manifest.permission.NEARBY_WIFI_DEVICES
+    const val BLUETOOTH_ADVERTISE_PERMISSION = Manifest.permission.BLUETOOTH_ADVERTISE
 
     const val ACCESS_FINE_LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
     const val ACCESS_COARSE_LOCATION_PERMISSION = Manifest.permission.ACCESS_COARSE_LOCATION
