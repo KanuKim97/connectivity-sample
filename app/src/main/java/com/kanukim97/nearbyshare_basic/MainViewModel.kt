@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.kanukim97.nearbyshare_basic.feature.state.ShareState
 import com.kanukim97.nearbyshare_basic.feature.state.TransferState
+import com.kanukim97.nearbyshare_basic.model.Endpoint
 import com.kanukim97.nearbyshare_basic.utils.LogUtils.logD
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

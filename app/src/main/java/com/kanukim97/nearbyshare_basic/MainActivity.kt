@@ -113,7 +113,12 @@ class MainActivity : ComponentActivity() {
                     onAdvertisingStop = { stopAdvertising() },
                     onDiscoveringStart = { startDiscovering() },
                     onDiscoveringStop = { stopDiscovering() },
-                    onSendPayload = {},
+                    onSendPayload = {
+                        mConnectionsClient.sendPayload(
+                            mEstablishConnection.keys.first(),
+                            Payload.fromBytes(byteArrayOf(Byte.MAX_VALUE))
+                        )
+                    },
                     onAcceptConnection = {},
                     onRejectConnection = {}
                 )
@@ -190,9 +195,9 @@ class MainActivity : ComponentActivity() {
             endpointId,
             mConnectionLifecycleCallback
         ).addOnSuccessListener {
-            logD("SUCCESS")
+            logD("requestConnection() - Success")
         }.addOnFailureListener {
-            logE("Failed Request Connection", it)
+            logE("requestConnection() - Failed", it)
         }
     }
 
