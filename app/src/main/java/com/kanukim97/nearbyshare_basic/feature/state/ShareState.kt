@@ -9,6 +9,11 @@ import androidx.compose.runtime.Stable
  *
  * This interface is using on NearByShareScreen
  *
+ * @property IDLE no advertising, no discovering state
+ * @property Advertising Device is advertising
+ * @property Discovering Device is discovering
+ * @property Failed when device get exception while share state is advertising or discovering
+ *
  * @author KanuKim97
  */
 @Stable
